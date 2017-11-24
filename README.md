@@ -5,11 +5,27 @@
 [![Test Coverage](https://codeclimate.com/github/18F/federalist/badges/coverage.svg)](https://codeclimate.com/github/18F/federalist/coverage)
 [![Dependency Status](https://gemnasium.com/badges/github.com/18F/federalist.svg)](https://gemnasium.com/github.com/18F/federalist)
 
-***Under active development. Everything is subject to change. Learn more at the [documentation site](https://federalist-docs.18f.gov/). Interested in talking to us? [Join our public chat room](https://chat.18f.gov/).***
+***Federalist is updated regularly.  Contact us via [email]() or [Join our public chat room](https://chat.18f.gov/) to talk to us and stay informed. Or, check our our [documentation](https://federalist-docs.18f.gov/).***
 
-Federalist is a unified interface for publishing static government websites. It automates common tasks for integrating GitHub and Amazon Web Services to provide a simple way for developers to launch new static websites or more easily manage existing static websites. This repo is home to "federalist-core" - a Node.js app that allows government users to add and configure their Federalist sites.
+## About Federalist
+
+Federalist helps government agencies publish basic websites quickly and seamlessly.  It provides a simple interface for managing simple website content that is compliant with federal guidelines.  More complex tasks are automated behind the scenes, providing a way for users to more easily create and launch government websites.  Federalist is built on top of Github and Amazon Web Services.   
+
+Federalist-core is a node.js application that allows government users to add and configure basic websites. 
+
+## Examples
+
+Partner agencies across the federal government use Federalist to host websites.  A few examples include: 
+
+- [College Scorecard] (https://collegescorecard.ed.gov/)
+- [Natural Resources Revenue Data] (https://revenuedata.doi.gov/)
+- [NSF Small Business Innovation Research program] (https://seedfund.nsg.gov)
+
+More examples can be found [here] (https://federalist-docs.18f.gov/pages/about-federalist/example-sites/). 
 
 ## Getting started
+
+This section will walk you through how to install Federalist locally onto your own machine or within your own environment.  Depending on your familiarity with the dependencies and process, this may take anywhere between an hour or two to the better part of a day.  If you need help, [contact us](). 
 
 ### Dependencies / Tooling
 Before you start, ensure you have the following installed:
@@ -20,25 +36,29 @@ Before you start, ensure you have the following installed:
 - [Postgres](https://www.postgresql.org/)
 - [Cloud Foundry CLI](https://docs.cloudfoundry.org/cf-cli/install-go-cli.html)
 
+Most of these dependencies can be installed relatively quickly if you don't already have them.  Most can also be installed via terminal using popular package managers like [brew](https://brew.sh/). 
 
-### Running locally (development)
+### Setting up a local development environment on your own machine
 
-1. Download or clone the `18F/federalist` repository from Github using command line or by clicking on the *clone or download* button above. 
-1. Open terminal on your computer, and navigate to the directory where the repository was copied.  You can use the `cd` to move to that directory. For example: 
-`cd federalist`
+This section will walk you through downloading the Federalist code, making sure you are running the correct version of node, and creating a copy of the configuration file you'll edit later. 
 
-1. From terminal, type `nvm use`.  This will check to see if you are using the correct version of node.  If you aren't using the correct version, the message prompt will instruct you on setting the correct version. 
+1. To get started, you'll need to first create your own copy of the Federalist code.  Download or clone the `18F/federalist` repository from Github using command line in terminal or by clicking on the *clone or download* button above. 
+1. Next, open terminal on your computer, and browse to the directory where you copied the repository.  (Hint: you can use the `cd` command to move to that directory in terminal. For example: `cd federalist` will change your working directory to the federalist folder.)
+
+1. Next, we'll want to make sure you're using the right version of [node](https://nodejs.org/en/download/package-manager/#osx). From terminal, type `nvm use`.  If you aren't using the correct version, the message prompt will instruct you on setting the correct version for the federalist install. 
 1. Next, type `yarn` to load modules and install Jekyll dependencies.
-1. Next, you'll want to make a copy of the `config/local.sample.js` file and name it `local.js`, keeping it in the same folder.  To do this, type: 
-`cp config/local.sample.js config/local.js`
-This file will hold your S3 and SQS configurations, which are used to tell Federalist where to store your files among other things.
-1. [Register a new OAuth application on GitHub](https://github.com/settings/applications/new). You'll want to use `http://localhost:1337/auth` as the "Authorization callback url". Once you have created the application, you'll see a `Client ID` and `Client Secret` on the next screen. Add these values to `config/local.js`.
+1. You'll need to make a copy of the `config/local.sample.js` file, which is a template we'll fill out with information specific for your own Federalist site.   To do this, type: 
+`cp config/local.sample.js config/local.js`  
+This will create a copy of the `local.sample.js` file in the `config` directory and rename it to `local.js`.  
 
-First, edit the file using terminal: 
+We'll now edit the `local.js` to include your S3 and SQS configurations, which are used to tell Federalist where to store your files among other things.  To do that, we have to get a few variables as you continue setting up your Federalist application. 
 
-`vi config.js`
+#### Editing the configuration file 
+In this section we'll walk you through the steps necessary to get all the varialbes you'll need to put in the `local.js` configuration file you've just created.  
 
-Next, use the arrow keys to move to the clientID and clientSecret sections of the file, and replace the these values with those provided by Github: 
+1. First, [register a new OAuth application on GitHub](https://github.com/settings/applications/new). You'll want to use `http://localhost:1337/auth` as the "Authorization callback url". Once you have created the application, you'll see a `Client ID` and `Client Secret` on the next screen. Add these values to `config/local.js`.  Next, add 'http://localhost:1337/auth/github/callback' as the value for the 'callbackURL'. 
+
+You can edit `local.js` either through terminal (e.g. `vi config.js`) or by using a text editor.  Using your preferred method, find and replace the these values with those provided by Github: 
 
     ```js
     passport: {
@@ -51,9 +71,7 @@ Next, use the arrow keys to move to the clientID and clientSecret sections of th
       }
     }
     ```
-    When you're done, simply type `:wq`, which will write your edits and quit the editor in terminal. 
-    
-1. [Register or create a new GitHub organization](https://github.com/settings/organizations). Find your organization's ID by visiting `https://api.github.com/orgs/<your-org-name>` and copying the `id` into the whitelist of `organizations` in `config/local.js`.
+1. [Register or create a new GitHub organization](https://github.com/settings/organizations). Find your organization's ID by visiting `https://api.github.com/orgs/<your-org-name>`.  Next, copy the value shown for `id` into the whitelist section of `organizations` in `config/local.js`.
     ```js
     organizations: [
       99999999 // your org added here
@@ -72,10 +90,15 @@ Next, use the arrow keys to move to the clientID and clientSecret sections of th
     - `FEDERALIST_AWS_BUILD_KEY` is `accessKeyId`
     - `FEDERALIST_SESSION_SECRET` is `secreyAccessKey`
     - `FEDERALIST_SQS_QUEUE` is `queue`
+You're done!  You've now successfully set all the environment variables for your new Federalist development environment.  Next, we'll set up the databases necessary to run Federalist.   
+
+#### Creating the databases for your local development environment  
 1. Create Postgres databases by running (note: if you don't already have Postgres insalled, you can [download it here]). 
     - Run `createdb federalist`
     - Run `createdb federalist-test`
-1. Great work! The Federalist app is now ready to run locally! :tada:
+    
+### Check to see if everything is working correctly    
+1. If you've successfully completed all of the stepsThe Federalist app is now ready to run locally! :tada:
     - Run `yarn`
     - Run `yarn build`
     - Run `yarn start`
@@ -85,8 +108,7 @@ Next, use the arrow keys to move to the clientID and clientSecret sections of th
 - You can use `yarn watch` to automatically restart the server and rebuild front end assets on file change, which is useful for development.
 - You can use `yarn test` to run local testing on the app.
 
-
-#### Build the server and the front-end
+## Build the server and the front-end
 
 If you are working on the front-end of the application, the things you need to know are:
 
