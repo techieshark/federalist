@@ -23,12 +23,23 @@ Before you start, ensure you have the following installed:
 
 ### Running locally (development)
 
-1. Download or clone the `18F/federalist` repository from Github and `cd` to that directory.
-1. Run `nvm use` to ensure you are using the correct version of node.
-1. Run `yarn` to load modules and install Jekyll dependencies.
-1. Make a copy of `config/local.sample.js` and name it `local.js` and place it in the `config` folder.
-This will be the file that holds your S3 and SQS configurations.
-1. [Register a new OAuth application on GitHub](https://github.com/settings/applications/new). You'll want to use `http://localhost:1337/auth` as the "Authorization callback url". Once you have created the application, you'll see a `Client ID` and `Client Secret`. Add these values to `config/local.js`.
+1. Download or clone the `18F/federalist` repository from Github using command line or by clicking on the *clone or download* button above. 
+1. Open terminal on your computer, and navigate to the directory where the repository was copied.  You can use the `cd` to move to that directory. For example: 
+`cd federalist`
+
+1. From terminal, type `nvm use`.  This will check to see if you are using the correct version of node.  If you aren't using the correct version, the message prompt will instruct you on setting the correct version. 
+1. Next, type `yarn` to load modules and install Jekyll dependencies.
+1. Next, you'll want to make a copy of the `config/local.sample.js` file and name it `local.js`, keeping it in the same folder.  To do this, type: 
+`cp config/local.sample.js config/local.js`
+This file will hold your S3 and SQS configurations, which are used to tell Federalist where to store your files among other things.
+1. [Register a new OAuth application on GitHub](https://github.com/settings/applications/new). You'll want to use `http://localhost:1337/auth` as the "Authorization callback url". Once you have created the application, you'll see a `Client ID` and `Client Secret` on the next screen. Add these values to `config/local.js`.
+
+First, edit the file using terminal: 
+
+`vi config.js`
+
+Next, use the arrow keys to move to the clientID and clientSecret sections of the file, and replace the these values with those provided by Github: 
+
     ```js
     passport: {
       github: {
@@ -40,6 +51,8 @@ This will be the file that holds your S3 and SQS configurations.
       }
     }
     ```
+    When you're done, simply type `:wq`, which will write your edits and quit the editor in terminal. 
+    
 1. [Register or create a new GitHub organization](https://github.com/settings/organizations). Find your organization's ID by visiting `https://api.github.com/orgs/<your-org-name>` and copying the `id` into the whitelist of `organizations` in `config/local.js`.
     ```js
     organizations: [
@@ -47,19 +60,19 @@ This will be the file that holds your S3 and SQS configurations.
     ]
     ```
 1. Type `cf login --sso -a https://api.fr.cloud.gov -o gsa-18f-federalist -s staging` in terminal.
-1. Visit https://login.fr.cloud.gov/passcode to get a one time passcode.
-1. Enter your passcode back into terminal.
-1. Type `cf apps`.
+1. Visit https://login.fr.cloud.gov/passcode to get a one time passcode.  You'll need to login using your cloud.gov credentials.
+1. Enter your passcode back into terminal.  (Note: if you have a problem at this point it's likely because you don't have permissions.  [Contact us] for help.)
+1. Type `cf apps`.  This will list the current, running applications. 
 1. Type `cf env federalist-staging` to get environment variables.
-1. Find the section in the listing of environment variables that starts with `"s3": [` and look for the following values and paste those values into the S3 section in your `local.js` file.
+1. Find the section in the listing of environment variables that starts with `"s3": [` and look for the following values and paste those values into the S3 section in your `local.js` file.  (Hint: you may have to scroll up to the top of the file to find the S3 environment variables.)
     - `access_key_id`
     - `bucket`
     - `secret_access_key`
-1. Find the section in the listing of environment variables for SQS and look for the following values and paste those values into the SQS section in your `local.js` file.
+1. Next, we'll enter some environment variables for SQS.  Under credentials (listed just under the S3 section of the document), find the following values and paste those values into the SQS section in your `local.js` file.
     - `FEDERALIST_AWS_BUILD_KEY` is `accessKeyId`
     - `FEDERALIST_SESSION_SECRET` is `secreyAccessKey`
     - `FEDERALIST_SQS_QUEUE` is `queue`
-1. Create Postgres databases by running
+1. Create Postgres databases by running (note: if you don't already have Postgres insalled, you can [download it here]). 
     - Run `createdb federalist`
     - Run `createdb federalist-test`
 1. Great work! The Federalist app is now ready to run locally! :tada:
