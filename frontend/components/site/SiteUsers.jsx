@@ -23,13 +23,15 @@ const SiteUsers = ({ site, user }) => {
     event.preventDefault();
     const userToRemoveId = userToRemove.id;
 
-    siteActions.removeUserFromSite(site.id, userToRemoveId, userToRemoveId === user.id);
-console.log("\n\nfetching more sites\n\n");
-    siteActions.fetchSite(site.id)//siteActions.fetchSites()
-    .then(theSite => {
-      console.log("\n\nfetchedSite:\t" + JSON.stringify(theSite) + "\n\n");
-    });
-console.log("\n\nfetchEEED more sites\n\n");
+    siteActions.removeUserFromSite(site.id, userToRemoveId, userToRemoveId === user.id).then(() => {
+      return siteActions.fetchSites();
+    })
+// console.log("\n\nfetching more sites\n\n");
+//     siteActions.fetchSite(site.id)//siteActions.fetchSites()
+//     .then(theSite => {
+//       console.log("\n\nfetchedSite:\t" + JSON.stringify(theSite) + "\n\n");
+//     });
+// console.log("\n\nfetchEEED more sites\n\n");
   };
 
   return (

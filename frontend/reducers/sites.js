@@ -28,9 +28,15 @@ export default function sites(state = initialState, action) {
 
     case SITES_RECEIVED: {
       const nextSites = action.sites || state.data;
+      let currentSite;
+
+      if (state.currentSite) {
+        currentSite = nextSites.find(site => site.id === state.currentSite.id);
+      }
 
       return {
         ...state,
+        currentSite,
         isLoading: false,
         data: nextSites,
       };
