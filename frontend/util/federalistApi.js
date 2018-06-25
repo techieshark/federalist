@@ -53,6 +53,10 @@ export default {
     return this.fetch('site');
   },
 
+  fetchSite(siteId) {
+    return this.fetch(`site/${siteId}`);
+  },
+
   fetchUser() {
     return this.fetch('me');
   },

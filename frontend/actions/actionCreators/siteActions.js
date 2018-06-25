@@ -1,5 +1,6 @@
 const sitesFetchStartedType = 'SITES_FETCH_STARTED';
 const sitesReceivedType = 'SITES_RECEIVED';
+const siteReceivedType = 'SITE_RECEIVED';
 const siteAddedType = 'SITE_ADDED';
 const siteUpdatedType = 'SITE_UPDATED';
 const siteDeletedType = 'SITE_DELETED';
@@ -11,10 +12,21 @@ const sitesFetchStarted = () => ({
   type: sitesFetchStartedType,
 });
 
-const sitesReceived = sites => ({
-  type: sitesReceivedType,
-  sites,
-});
+const sitesReceived = sites => {
+	console.log("\n\nsitesReceived:\t" + JSON.stringify(sites));
+	return {
+	  type: sitesReceivedType,
+	  sites,
+	};
+}
+
+const siteReceived = sites => {
+	console.log("\n\nsiteReceived:\t" + JSON.stringify(sites));
+	return {
+	  type: siteReceivedType,
+	  sites,
+	};
+}
 
 const siteAdded = site => ({
   type: siteAddedType,
@@ -50,6 +62,7 @@ const setCurrentSite = siteId => ({
 export {
   sitesFetchStarted, sitesFetchStartedType,
   sitesReceived, sitesReceivedType,
+  siteReceived, siteReceivedType,
   siteAdded, siteAddedType,
   siteUpdated, siteUpdatedType,
   siteDeleted, siteDeletedType,

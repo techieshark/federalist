@@ -3,6 +3,7 @@ import { dispatch } from '../store';
 import {
   sitesFetchStarted as createSitesFetchStartedAction,
   sitesReceived as createSitesReceivedAction,
+  siteReceived as createSiteReceivedAction,
   siteAdded as createSiteAddedAction,
   siteUpdated as createSiteUpdatedAction,
   siteDeleted as createSiteDeletedAction,
@@ -30,7 +31,14 @@ const dispatchSitesFetchStartedAction = () => {
 };
 
 const dispatchSitesReceivedAction = (sites) => {
+	console.log("\n\ndispatchSitesReceivedAction:\t" + JSON.stringify(sites) + "\n\n");
   dispatch(createSitesReceivedAction(sites));
+};
+
+
+const dispatchSiteReceivedAction = (sites) => {
+	console.log("\n\ndispatchSiteReceivedAction:\t" + JSON.stringify(sites) + "\n\n");
+  dispatch(createSiteReceivedAction(sites));
 };
 
 const dispatchSiteAddedAction = (site) => {
@@ -70,6 +78,7 @@ export {
   updateRouterToSiteBuildsUri,
   dispatchSitesFetchStartedAction,
   dispatchSitesReceivedAction,
+  dispatchSiteReceivedAction,
   dispatchSiteAddedAction,
   dispatchSiteUpdatedAction,
   dispatchSiteDeletedAction,

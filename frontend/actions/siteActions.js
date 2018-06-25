@@ -6,7 +6,9 @@ import alertActions from './alertActions';
 import {
   updateRouterToSitesUri,
   updateRouterToSiteBuildsUri,
+  dispatchSiteFetchStartedAction,
   dispatchSitesFetchStartedAction,
+  dispatchSiteReceivedAction,
   dispatchSitesReceivedAction,
   dispatchSiteAddedAction,
   dispatchSiteUpdatedAction,
@@ -35,6 +37,13 @@ export default {
     dispatchSitesFetchStartedAction();
     return federalist.fetchSites()
       .then(dispatchSitesReceivedAction)
+      .catch(alertError);
+  },
+
+  fetchSite(siteId) {
+    dispatchSitesFetchStartedAction();
+    return federalist.fetchSite(siteId)
+      .then(dispatchSiteReceivedAction)
       .catch(alertError);
   },
 
