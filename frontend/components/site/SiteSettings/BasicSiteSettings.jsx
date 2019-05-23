@@ -4,6 +4,7 @@ import { reduxForm } from 'redux-form';
 
 import HttpsUrlField from '../../Fields/HttpsUrlField';
 import BranchField from '../../Fields/BranchField';
+import RequestScanButton from '../requestScanButton';
 
 export const BasicSiteSettings = ({
   // even though initialValues is not directly used, it is used
@@ -46,6 +47,7 @@ export const BasicSiteSettings = ({
           placeholder="https://example.gov"
           className="form-control"
         />
+        <RequestScanButton siteId={1} />
       </fieldset>
     </div>
     <div className="well">
@@ -71,6 +73,7 @@ export const BasicSiteSettings = ({
           placeholder="https://demo.example.gov"
           className="form-control"
         />
+        <RequestScanButton siteId={1} />
       </fieldset>
     </div>
     <button
