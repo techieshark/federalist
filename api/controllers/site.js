@@ -4,6 +4,7 @@ const S3SiteRemover = require('../services/S3SiteRemover');
 const SiteCreator = require('../services/SiteCreator');
 const SiteMembershipCreator = require('../services/SiteMembershipCreator');
 const UserActionCreator = require('../services/UserActionCreator');
+const SiteScan = require('../services/SiteScan');
 const siteSerializer = require('../serializers/site');
 const { User, Site, Build } = require('../models');
 const siteErrors = require('../responses/siteErrors');
@@ -206,6 +207,34 @@ module.exports = {
         return null;
       })
       .then(() => siteSerializer.serialize(site))
+      .then((siteJSON) => {
+        res.json(siteJSON);
+      })
+      .catch((err) => {
+        res.error(err);
+      });
+  },
+
+  requestSiteScan: (req, res) => {
+    let site;
+
+    Promise.resolve(Number(req.params.id))
+      .then((id) => {
+        if (_.isNaN(id)) {
+          throw 404;
+        }
+        return Site.findByPk(id);
+      })
+      .then((model) => {
+        site = model;
+        if (!site) {
+          throw 404;
+        }
+        return authorizer.scanSite(req.user, site);
+      })
+      .then(() => SiteScan.request(site, req.body.branch_type))
+      .then(() => Site.findByPk(site.id))
+      .then((_site) => siteSerializer.serialize(_site))
       .then((siteJSON) => {
         res.json(siteJSON);
       })

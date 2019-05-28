@@ -3,6 +3,7 @@ const sitesReceivedType = 'SITES_RECEIVED';
 const siteAddedType = 'SITE_ADDED';
 const siteUpdatedType = 'SITE_UPDATED';
 const siteDeletedType = 'SITE_DELETED';
+const siteScanRequestedType = 'SITE_SCAN_REQUESTED';
 const siteUserAddedType = 'SITE_USER_ADDED';
 const siteUserRemovedType = 'SITE_USER_REMOVED';
 const setCurrentSiteType = 'SET_CURRENT_SITE';
@@ -33,6 +34,11 @@ const siteDeleted = siteId => ({
   siteId,
 });
 
+const siteScanRequested = site => ({
+  type: siteScanRequestedType,
+  site,
+});
+
 const siteUserAdded = site => ({
   type: siteUserAddedType,
   site,
@@ -60,6 +66,7 @@ export {
   siteAdded, siteAddedType,
   siteUpdated, siteUpdatedType,
   siteDeleted, siteDeletedType,
+  siteScanRequested, siteScanRequestedType,
   siteUserAdded, siteUserAddedType,
   siteUserRemoved, siteUserRemovedType,
   setCurrentSiteType, setCurrentSite,

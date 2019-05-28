@@ -101,6 +101,15 @@ export default {
     });
   },
 
+  siteScanRequest(site, branch_type) {
+    return this.fetch(`site/${site.id}/scan-request`, {
+      method: 'POST',
+      data: { branch_type },
+    }, {
+      handleHttpError: false,
+    });
+  },
+
   deleteSite(siteId) {
     return this.fetch(`site/${siteId}`,
       { method: 'DELETE' },

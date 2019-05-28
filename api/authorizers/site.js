@@ -51,6 +51,8 @@ const findOne = (user, site) => authorize(user, site);
 
 const update = (user, site) => authorize(user, site);
 
+const scanSite = (user, site) => authorize(user, site);
+
 const destroy = (user, site) => (
   authorize(user, site)
   .then(() => authorizeAdmin(user, site))
@@ -67,4 +69,5 @@ module.exports = {
   removeUser,
   showActions,
   createBuild,
+  scanSite,
 };

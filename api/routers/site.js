@@ -16,4 +16,5 @@ router.get('/site/:id', sessionAuth, SiteController.findById);
 router.put('/site/:id', sessionAuth, SiteController.update);
 router.delete('/site/:id', sessionAuth, SiteController.destroy);
 router.put('/site/:site_id/notifications', sessionAuth, SiteUserController.updateNotificationSettings);
+router.post('/site/:id/scan-request', SiteController.requestSiteScan);
 module.exports = router;

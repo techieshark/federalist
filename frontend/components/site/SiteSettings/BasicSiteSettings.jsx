@@ -14,6 +14,8 @@ export const BasicSiteSettings = ({
   reset,
   pristine,
   handleSubmit,
+  handleScanRequest,
+  handleDemoScanRequest,
 }) => (
   <form className="settings-form" onSubmit={handleSubmit}>
     <h3>Basic settings</h3>
@@ -47,7 +49,14 @@ export const BasicSiteSettings = ({
           placeholder="https://example.gov"
           className="form-control"
         />
-        <RequestScanButton siteId={1} />
+        <button
+          type="button"
+          className="usa-button usa-button-secondary"
+          //disabled={pristine}
+          onClick={handleScanRequest}
+        >
+        Request Scan
+        </button>
       </fieldset>
     </div>
     <div className="well">
@@ -73,7 +82,6 @@ export const BasicSiteSettings = ({
           placeholder="https://demo.example.gov"
           className="form-control"
         />
-        <RequestScanButton siteId={1} />
       </fieldset>
     </div>
     <button
@@ -106,6 +114,8 @@ BasicSiteSettings.propTypes = {
 
   // the following props are from reduxForm:
   handleSubmit: PropTypes.func.isRequired,
+  handleScanRequest: PropTypes.func.isRequired,
+  handleDemoScanRequest: PropTypes.func.isRequired,
   reset: PropTypes.func.isRequired,
   pristine: PropTypes.bool.isRequired,
 };

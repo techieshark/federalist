@@ -10,6 +10,7 @@ import {
   dispatchSitesReceivedAction,
   dispatchSiteAddedAction,
   dispatchSiteUpdatedAction,
+  dispatchSiteScanRequestedAction,
   dispatchSiteUserUpdatedAction,
   dispatchSiteDeletedAction,
   dispatchUserAddedToSiteAction,
@@ -100,6 +101,16 @@ export default {
     return federalist.deleteSite(siteId)
       .then(updateRouterToSitesUri)
       .then(dispatchSiteDeletedAction.bind(null, siteId))
+      .catch(alertError);
+  },
+
+  siteScanRequest(site, branch_type) {
+    return federalist.siteScanRequest(site, branch_type)
+      .then((requestedSite) => {
+        if (requestedSite) {
+          dispatchSiteScanRequestedAction(requestedSite);
+        }
+      })
       .catch(alertError);
   },
 

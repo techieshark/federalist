@@ -10,6 +10,7 @@ import {
   siteUserRemoved as siteUserRemovedAction,
   setCurrentSite as setCurrentSiteAction,
   siteUserUpdated as createSiteUserUpdatedAction,
+  siteScanRequested as createScanRequestedAction,
 } from './actionCreators/siteActions';
 import {
   showAddNewSiteFields as createShowAddNewSiteFieldsAction,
@@ -41,6 +42,10 @@ const dispatchSiteAddedAction = (site) => {
 const dispatchSiteUpdatedAction = (site) => {
   dispatch(createSiteUpdatedAction(site));
 };
+
+const dispatchSiteScanRequestedAction = (siteId) => {
+  dispatch(createScanRequestedAction(siteId));
+}
 
 const dispatchSiteDeletedAction = (siteId) => {
   dispatch(createSiteDeletedAction(siteId));
@@ -78,6 +83,7 @@ export {
   dispatchSiteAddedAction,
   dispatchSiteUpdatedAction,
   dispatchSiteDeletedAction,
+  dispatchSiteScanRequestedAction,
   dispatchUserAddedToSiteAction,
   dispatchUserRemovedFromSiteAction,
   dispatchShowAddNewSiteFieldsAction,

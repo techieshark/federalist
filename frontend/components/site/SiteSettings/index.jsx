@@ -13,7 +13,7 @@ import siteActions from '../../../actions/siteActions';
 class SiteSettings extends React.Component {
   constructor(props) {
     super(props);
-    autoBind(this, 'handleUpdate', 'handleDelete', 'handleCopySite');
+    autoBind(this, 'handleUpdate', 'handleDelete', 'handleCopySite', 'handleScanRequest');
   }
 
   handleDelete() {
@@ -43,6 +43,24 @@ class SiteSettings extends React.Component {
     };
 
     siteActions.addSite(siteParams);
+  }
+
+  handleScanRequest() { // branch_type = {'live', 'demo'}
+    // eslint-disable-next-line no-alert
+    if (window.confirm('This action initiates the go-live process for your live site.  Are you sure you want to submit a security scan request of this site?')) {
+      return siteActions.siteScanRequest(this.props.site, 'defaultBranch');
+    }
+
+    return Promise.resolve();
+  }
+
+  handleDemoScanRequest() {
+    // eslint-disable-next-line no-alert
+    if (window.confirm('This action initiates the go-live process for your demo site.  Are you sure you want to submit a security scan request of this site?')) {
+      return siteActions.siteScanRequest(this.props.site, 'demoBranch');
+    }
+
+    return Promise.resolve();
   }
 
   render() {
@@ -94,6 +112,7 @@ class SiteSettings extends React.Component {
         <BasicSiteSettings
           initialValues={basicInitialValues}
           onSubmit={this.handleUpdate}
+          handleScanRequest={this.handleScanRequest}
         />
         <ExpandableArea title="Advanced settings">
           <AdvancedSiteSettings

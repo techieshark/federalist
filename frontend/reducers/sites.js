@@ -9,6 +9,7 @@ import {
   siteUserRemovedType as SITE_USER_REMOVED,
   setCurrentSiteType as SET_CURRENT_SITE,
   siteUserUpdatedType as SITE_USER_UPDATED,
+  siteScanRequestedType as SITE_SCAN_REQUESTED,
 } from '../actions/actionCreators/siteActions';
 
 const initialState = {
@@ -51,6 +52,7 @@ export default function sites(state = initialState, action) {
 
     case SITE_UPDATED:
     case SITE_USER_UPDATED:
+    case SITE_SCAN_REQUESTED:
       return {
         isLoading: false,
         data: mapPropertyToMatchingSite(state.data, action.siteId, action.site),
