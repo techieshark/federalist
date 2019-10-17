@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { reduxForm, Field } from 'redux-form';
+import { Form, Field } from 'react-final-form';
 import AlertBanner from '../../alertBanner';
 import BranchField from '../../Fields/BranchField';
 import InputWithErrorField from '../../Fields/InputWithErrorField';
@@ -96,30 +96,34 @@ class CopyRepoForm extends React.Component {
 
   render() {
     return (
-      <form onSubmit={this.props.handleSubmit}>
-        <AlertBanner
-          status="warning"
-          header="This is an alpha feature!"
-          message=" "
-        >
-          {this.renderDisclaimer()}
-        </AlertBanner>
-        <div className="well">
-          <fieldset>
-            <legend>Site details</legend>
-            <div className="form-group">
-              {this.renderOwnerField()}
+      <Form>
+        {({ handleSubmit, pristine }) => (
+          <form onSubmit={this.props.handleSubmit}>
+            <AlertBanner
+              status="warning"
+              header="This is an alpha feature!"
+              message=" "
+            >
+              {this.renderDisclaimer()}
+            </AlertBanner>
+            <div className="well">
+              <fieldset>
+                <legend>Site details</legend>
+                <div className="form-group">
+                  {this.renderOwnerField()}
+                </div>
+                <div className="form-group">
+                  {this.renderRepoField()}
+                </div>
+                <div className="form-group">
+                  {this.renderBranchField()}
+                </div>
+              </fieldset>
             </div>
-            <div className="form-group">
-              {this.renderRepoField()}
-            </div>
-            <div className="form-group">
-              {this.renderBranchField()}
-            </div>
-          </fieldset>
-        </div>
-        {this.renderSubmit()}
-      </form>
+            {this.renderSubmit()}
+          </form>
+        )}
+      </Form> 
     );
   }
 }
@@ -131,4 +135,4 @@ CopyRepoForm.propTypes = {
 
 export { CopyRepoForm };
 
-export default reduxForm({ form: 'copyRepoForm' })(CopyRepoForm);
+export default CopyRepoForm;

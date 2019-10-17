@@ -1,95 +1,99 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { reduxForm } from 'redux-form';
+import { Field, Form } from 'react-final-form';
 
 import HttpsUrlField from '../../Fields/HttpsUrlField';
 import BranchField from '../../Fields/BranchField';
 
-export const BasicSiteSettings = ({
-  // even though initialValues is not directly used, it is used
-  // by reduxForm, and we want PropType validation on it, so we'll
-  // keep it here but disable the eslint rule below
-  initialValues, // eslint-disable-line no-unused-vars
-  reset,
-  pristine,
-  handleSubmit,
-}) => (
-  <form className="settings-form" onSubmit={handleSubmit}>
-    <h3>Basic settings</h3>
-    <div className="well">
-      <fieldset>
-        <legend>Live site</legend>
-        <p className="well-text">
-          Set the primary branch Federalist uses to build your site.
-          After your DNS is pointed to Federalist, you&apos;ll set
-          the <a
-            href="https://federalist.18f.gov/pages/how-federalist-works/custom-urls/"
-            target="_blank"
-            rel="noopener noreferrer"
-            title="Custom URL documentation"
-          >
-            live URL
-          </a> to ensure the site builds correctly.
-        </p>
-        <BranchField
-          label="Branch name:"
-          type="text"
-          id="defaultBranchInput"
-          name="defaultBranch"
-          className="form-control"
-          placeholder="Branch name"
-        />
-        <HttpsUrlField
-          label="Live URL:"
-          name="domain"
-          id="domainInput"
-          placeholder="https://example.gov"
-          className="form-control"
-        />
-      </fieldset>
-    </div>
-    <div className="well">
-      <fieldset>
-        <legend>Demo site</legend>
-        <p className="well-text">
-          Optional: After setting up DNS with the Federalist team, set a demo branch
-          to be deployed to a custom URL like <code>demo.example.gov</code> instead
-          of a standard Federalist preview URL.
-        </p>
-        <BranchField
-          label="Branch name:"
-          name="demoBranch"
-          id="demoBranchInput"
-          className="form-control"
-          type="text"
-          placeholder="Branch name"
-        />
-        <HttpsUrlField
-          label="Demo URL:"
-          name="demoDomain"
-          id="demoDomainInput"
-          placeholder="https://demo.example.gov"
-          className="form-control"
-        />
-      </fieldset>
-    </div>
-    <button
-      type="button"
-      className="usa-button usa-button-secondary"
-      disabled={pristine}
-      onClick={reset}
-    >
-      Reset
-    </button>
+export const BasicSiteSettings = props => (
+  <Form>
+    {({
+      // even though initialValues is not directly used, it is used
+      // by reduxForm, and we want PropType validation on it, so we'll
+      // keep it here but disable the eslint rule below
+      initialValues, // eslint-disable-line no-unused-vars
+      form,
+      pristine,
+      handleSubmit,
+    }) => (
+      <form className="settings-form" onSubmit={handleSubmit}>
+        <h3>Basic settings</h3>
+        <div className="well">
+          <fieldset>
+            <legend>Live site</legend>
+            <p className="well-text">
+              Set the primary branch Federalist uses to build your site.
+              After your DNS is pointed to Federalist, you&apos;ll set
+              the <a
+                href="https://federalist.18f.gov/pages/how-federalist-works/custom-urls/"
+                target="_blank"
+                rel="noopener noreferrer"
+                title="Custom URL documentation"
+              >
+                live URL
+              </a> to ensure the site builds correctly.
+            </p>
+            <BranchField
+              label="Branch name:"
+              type="text"
+              id="defaultBranchInput"
+              name="defaultBranch"
+              className="form-control"
+              placeholder="Branch name"
+            />
+            <HttpsUrlField
+              label="Live URL:"
+              name="domain"
+              id="domainInput"
+              placeholder="https://example.gov"
+              className="form-control"
+            />
+          </fieldset>
+        </div>
+        <div className="well">
+          <fieldset>
+            <legend>Demo site</legend>
+            <p className="well-text">
+              Optional: After setting up DNS with the Federalist team, set a demo branch
+              to be deployed to a custom URL like <code>demo.example.gov</code> instead
+              of a standard Federalist preview URL.
+            </p>
+            <BranchField
+              label="Branch name:"
+              name="demoBranch"
+              id="demoBranchInput"
+              className="form-control"
+              type="text"
+              placeholder="Branch name"
+            />
+            <HttpsUrlField
+              label="Demo URL:"
+              name="demoDomain"
+              id="demoDomainInput"
+              placeholder="https://demo.example.gov"
+              className="form-control"
+            />
+          </fieldset>
+        </div>
+        <button
+          type="button"
+          className="usa-button usa-button-secondary"
+          disabled={pristine}
+          onClick={form.reset}
+        >
+          Reset
+        </button>
 
-    <button
-      type="submit"
-      className="usa-button usa-button-primary"
-      disabled={pristine}
-    >
-      Save basic settings
-    </button>
-  </form>
+        <button
+          type="submit"
+          className="usa-button usa-button-primary"
+          disabled={pristine}
+        >
+          Save basic settings
+        </button>
+      </form>
+    )}
+  </Form>
 );
 
 BasicSiteSettings.propTypes = {
@@ -107,5 +111,4 @@ BasicSiteSettings.propTypes = {
   pristine: PropTypes.bool.isRequired,
 };
 
-// create a higher-order component with reduxForm and export that
-export default reduxForm({ form: 'basicSiteSettings' })(BasicSiteSettings);
+export default BasicSiteSettings;

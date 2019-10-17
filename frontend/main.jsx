@@ -5,21 +5,19 @@ import { render } from 'react-dom';
 import React from 'react';
 import { Provider } from 'react-redux';
 import { Router, browserHistory } from 'react-router';
-import { syncHistoryWithStore } from 'react-router-redux';
+import { routerMiddleware } from 'connected-react-router'
 
 import routes from './routes';
-import store from './store';
+import store, { history } from './store';
 
 import './sass/styles.scss';
-
-const history = syncHistoryWithStore(browserHistory, store);
 
 const mainEl = document.querySelector('#js-app');
 
 render((
   <Provider store={store}>
-    <Router history={history}>
+    <ConnectedRouter history={history}>
       { routes }
-    </Router>
+    </ConnectedRouter>
   </Provider>
 ), mainEl);
