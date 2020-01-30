@@ -177,9 +177,13 @@ function getsites() {
 
     ## Get a list of sites to migrate
     GET_SITES_SQL="select
+        id,
         owner,
         repository,
-        domain, \"demoDomain\",
+        domain,
+        \"defaultBranch\",
+        \"demoDomain\",
+        \"demoBranch\",
         \"awsBucketName\",
         \"s3ServiceName\"
     from site
@@ -370,12 +374,35 @@ if [ "$COMMAND" == "update_cdn" ] && [ "$2" != "help" ]; then
     update_cdn ${2} ${3} ${4} ${5}
 fi
 
+
+## Update Build Url
+function update_build_url() {
+    bucket=$1
+    owner=$2
+    repo=$3
+    site_id=$4
+    branch=$5
+    deploymnent=$6
+
+    UPDATE_SQL="
+    update build
+        set
+            \"url\" = 'https://$bucket.app.cloud.gov/$deployment/$owner/$repo',
+        where
+            site = '$site_id' and
+            branch = '$branch';
+    "
+}
+
 ## Run site migration in CF Task
 function migrate() {
     owner=${1}
     repo=${2}
     site_url=${3}
     demo_url=${4}
+    site_id=${5}
+    site_branch=${6}
+    demo_branch=${7}
 
     echo ""
     echo "Migration Settings"
@@ -409,11 +436,23 @@ function migrate() {
     create_infrastructure $owner $repo $CF_SPACE_NAME;
     echo "Created Infrastructure after $(($(date +%s)-$create_infrastructure_start)) seconds"
 
-    # Copy site from shared bucket into dedicated bucket
-    echo "Copying S3 site data to new site"
+    # Copy site and demo from shared bucket into dedicated bucket
+    # Update builds with new URLs
+    echo "Copying S3 site and demo data to new bucket"
+    echo "Updating builds with new site and demo urls"
     copy_start=$(date +%s)
-    cp_site $shared_bucket_service $owner $repo "site";
-    cp_site $shared_bucket_service $owner $repo "demo";
+
+    # Copy site
+    if [[ ! -z $site_branch ]]; then
+        cp_site $shared_bucket_service $owner $repo "site";
+        update_build_url $BUCKET_NAME $owner $repo $site_id $site_branch "site"
+    fi
+
+    if [[ ! -z $demo_branch ]]; then
+        cp_site $shared_bucket_service $owner $repo "demo";
+        update_build_url $BUCKET_NAME $owner $repo $site_id $demo_branch "demo"
+    fi
+
     # Ignore copying over branches due to time and size constraints
     # cp_site $shared_bucket_service $owner $repo "preview";
     echo "Copied S3 site data after $((($(date +%s)-$copy_start)/60)) minutes"
@@ -489,107 +528,114 @@ if [ "$COMMAND" == "migrate" ] && [ "$2" == "help" ]; then
     echo ""
 fi
 
-## Run site migration in CF Task
-function migrate_local() {
-    owner=${1}
-    repo=${2}
-    space=${3}
-    user=${4}
-    password=${5}
-    host=${6}
-    port=${7}
-    name=${8}
-    site_url=${9}
-    demo_url=${10}
+# ## Run site migration in CF Task
+# function migrate_local() {
+#     owner=${1}
+#     repo=${2}
+#     space=${3}
+#     user=${4}
+#     password=${5}
+#     host=${6}
+#     port=${7}
+#     name=${8}
+#     site_url=${9}
+#     demo_url=${10}
 
-    echo ""
-    echo "Migration Settings"
-    echo "owner $owner"
-    echo "repo $repo"
-    echo "cf space $space"
-    echo "user $user"
-    echo "password $password"
-    echo "host $host"
-    echo "port $port"
-    echo "name $name"
-    echo "site_url $site_url"
-    echo "demo_url $demo_url"
-    echo ""
+#     echo ""
+#     echo "Migration Settings"
+#     echo "owner $owner"
+#     echo "repo $repo"
+#     echo "cf space $space"
+#     echo "user $user"
+#     echo "password $password"
+#     echo "host $host"
+#     echo "port $port"
+#     echo "name $name"
+#     echo "site_url $site_url"
+#     echo "demo_url $demo_url"
+#     echo ""
 
-    # Set dedicated bucket service name
-    dedicated_bucket_service=`generate_service_name $owner $repo`
+#     # Set dedicated bucket service name
+#     dedicated_bucket_service=`generate_service_name $owner $repo`
 
-    # Start time
-    start_time=$(date +%s)
+#     # Start time
+#     start_time=$(date +%s)
 
-    # Set space environment variables
-    set_environment $space
+#     # Set space environment variables
+#     set_environment $space
 
-    # Set CF space
-    cf target -s $space;
+#     # Set CF space
+#     cf target -s $space;
 
-    # Create bucket, key, and route
-    create_infrastructure $owner $repo $space;
+#     # Create bucket, key, and route
+#     create_infrastructure $owner $repo $space;
 
-    # Copy site from shared bucket into dedicated bucket
-    cp_site $shared_bucket_service $owner $repo "site";
-    cp_site $shared_bucket_service $owner $repo "demo";
-    # Ignore copying over branches due to time and size constraints
-    # cp_site $shared_bucket_service $owner $repo "preview";
+#     # Copy site from shared bucket into dedicated bucket
+#     if [[ ! -z $site_url ]]; then
+#         cp_site $shared_bucket_service $owner $repo "site";
+#     fi
 
-    # Update database with new s3ServiceName and awsBucketName
-    update_site_table $owner $repo $user $password $host $port $name
+#     # Copy demo from shared bucket into dedicated bucket if exists
+#     if [[ ! -z $demo_url ]]; then
+#         cp_site $shared_bucket_service $owner $repo "demo";
+#     fi
 
-    # Set CF space to get AWS info
-    cf target -s $space;
+#     # Ignore copying over branches due to time and size constraints
+#     # cp_site $shared_bucket_service $owner $repo "preview";
 
-    # Grab AWS credentials
-    set_s3_credentials $dedicated_bucket_service
+#     # Update database with new s3ServiceName and awsBucketName
+#     update_site_table $owner $repo $user $password $host $port $name
 
-    if [[ ! -z $site_url ]]; then
-        update_cdn $site_url $BUCKET_NAME $owner $repo "site"
-    fi
+#     # Set CF space to get AWS info
+#     cf target -s $space;
 
-    # Reset CF space to get AWS info
-    cf target -s $space;
+#     # Grab AWS credentials
+#     set_s3_credentials $dedicated_bucket_service
 
-    # Grab AWS credentials
-    set_s3_credentials $dedicated_bucket_service
+#     if [[ ! -z $site_url ]]; then
+#         update_cdn $site_url $BUCKET_NAME $owner $repo "site"
+#     fi
 
-    if [[ ! -z $demo_url ]]; then
-        update_cdn $demo_url $BUCKET_NAME $owner $repo "demo"
-    fi
+#     # Reset CF space to get AWS info
+#     cf target -s $space;
 
-    # End time
-    end_time=$(date +%s)
-    run_time=$(((end_time-start_time)/60))
-    echo ""
-    echo "Total Time: $run_time minutes"
-    echo ""
-}
+#     # Grab AWS credentials
+#     set_s3_credentials $dedicated_bucket_service
 
-if [ "$COMMAND" == "migrate_local" ] && [ "$2" != "help" ]; then
-    migrate_local ${2} ${3} ${4} ${5} ${6} ${7} ${8} ${9} ${10} ${11} ${12} ${13}
-fi
+#     if [[ ! -z $demo_url ]]; then
+#         update_cdn $demo_url $BUCKET_NAME $owner $repo "demo"
+#     fi
 
-if [ "$COMMAND" == "migrate_local" ] && [ "$2" == "help" ]; then
-    echo "HELP"
-    echo ""
-    echo "\"$COMMAND\" takes three arguments in order: "
-    echo "      owner, repository, cf space, "
-    echo "      db user, db password, db host, db port, db name, site url, demo url"
-    echo ""
-    echo "      sEXAMPLE: $> ./scripts/migrate-site-bucket.sh migrate_local \ "
-    echo "                    <owner> \ "
-    echo "                    <repo> \ "
-    echo "                    <space> \ "
-    echo "                    <user> \ "
-    echo "                    <password> \ "
-    echo "                    <host> \ "
-    echo "                    <port> \ "
-    echo "                    <name> \ "
-    echo "                    <site_url> \ "
-    echo "                    <demo_url>  "
-    echo ""
-    echo ""
-fi
+#     # End time
+#     end_time=$(date +%s)
+#     run_time=$(((end_time-start_time)/60))
+#     echo ""
+#     echo "Total Time: $run_time minutes"
+#     echo ""
+# }
+
+# if [ "$COMMAND" == "migrate_local" ] && [ "$2" != "help" ]; then
+#     migrate_local ${2} ${3} ${4} ${5} ${6} ${7} ${8} ${9} ${10} ${11} ${12} ${13}
+# fi
+
+# if [ "$COMMAND" == "migrate_local" ] && [ "$2" == "help" ]; then
+#     echo "HELP"
+#     echo ""
+#     echo "\"$COMMAND\" takes three arguments in order: "
+#     echo "      owner, repository, cf space, "
+#     echo "      db user, db password, db host, db port, db name, site url, demo url"
+#     echo ""
+#     echo "      sEXAMPLE: $> ./scripts/migrate-site-bucket.sh migrate_local \ "
+#     echo "                    <owner> \ "
+#     echo "                    <repo> \ "
+#     echo "                    <space> \ "
+#     echo "                    <user> \ "
+#     echo "                    <password> \ "
+#     echo "                    <host> \ "
+#     echo "                    <port> \ "
+#     echo "                    <name> \ "
+#     echo "                    <site_url> \ "
+#     echo "                    <demo_url>  "
+#     echo ""
+#     echo ""
+# fi
