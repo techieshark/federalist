@@ -8,6 +8,7 @@ memory: 6G
 command: (echo SUCCESS || echo FAIL) && sleep infinity
 no-route: true
 health-check-type: none
+instances: 0
 services:
 - federalist-deploy-user
 - federalist-sites-user
