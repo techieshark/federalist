@@ -1,7 +1,7 @@
 applications:
 - name: federalist-bucket-migrator-worker-production
 docker:
-  image: apburnes/bucket-migrator:latest
+  image: federalist-registry.fr.cloud.gov/bucket-migrator:latest
 stack: cflinuxfs3
 disk_quota: 4G
 memory: 6G
