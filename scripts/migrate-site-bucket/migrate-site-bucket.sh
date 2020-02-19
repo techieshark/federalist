@@ -2,7 +2,6 @@
 
 COMMAND=$1
 
-
 ## Get and assign user credentials
 function set_vcap_vars() {
     export DEPLOY_USER_USERNAME=`echo $VCAP_SERVICES | jq -r '."user-provided"[0].credentials.DEPLOY_USER_USERNAME'`
@@ -275,7 +274,7 @@ function generate_service_name() {
 
     if [[ $service_length > 46 ]]; then
         service_name=`echo $service_name | cut -c1-39`;
-        service_name="$service_name-$day$month$year";
+        service_name="$service_name-$month$year";
     fi
 
     echo $service_name
@@ -357,11 +356,11 @@ function update_cdn() {
     bucket=$2
     owner=$3
     repo=$4
-    deploymnent=$5
+    deployment=$5
 
     domain_route="$domain-route"
     origin="$bucket.app.cloud.gov"
-    path="/$deploymnent/$owner/$repo"
+    path="/$deployment/$owner/$repo"
 
     cf target -s "sites";
 
@@ -382,16 +381,20 @@ function update_build_url() {
     repo=$3
     site_id=$4
     branch=$5
-    deploymnent=$6
+    deployment=$6
+
+    echo "Updating builds url for $deployment of $repo for $owner"
 
     UPDATE_SQL="
     update build
         set
-            \"url\" = 'https://$bucket.app.cloud.gov/$deployment/$owner/$repo',
+            \"url\" = 'https://$bucket.app.cloud.gov/$deployment/$owner/$repo'
         where
             site = '$site_id' and
             branch = '$branch';
     "
+
+    psql $DATABASE_URL -c "$UPDATE_SQL"
 }
 
 ## Run site migration in CF Task
@@ -410,6 +413,9 @@ function migrate() {
     echo "repo $repo"
     echo "site_url $site_url"
     echo "demo_url $demo_url"
+    echo "site_id $site_id"
+    echo "site_branch $site_branch"
+    echo "demo_branch $demo_branch"
     echo ""
 
     # Set CF environment variables
@@ -443,13 +449,27 @@ function migrate() {
     copy_start=$(date +%s)
 
     # Copy site
-    if [[ ! -z $site_branch ]]; then
+    if [[ $site_branch != "nill" ]]; then
+        echo ""
+        echo "Copying S3 site from branch $site_branch"
+        echo ""
         cp_site $shared_bucket_service $owner $repo "site";
+
+        echo ""
+        echo "Updating site builds from branch $site_branch"
+        echo ""
         update_build_url $BUCKET_NAME $owner $repo $site_id $site_branch "site"
     fi
 
-    if [[ ! -z $demo_branch ]]; then
+    if [[ $demo_branch != "nill" ]]; then
+        echo ""
+        echo "Copying S3 demo from branch $demo_branch"
+        echo ""
         cp_site $shared_bucket_service $owner $repo "demo";
+
+        echo ""
+        echo "Updating demo builds from branch $demo_branch"
+        echo ""
         update_build_url $BUCKET_NAME $owner $repo $site_id $demo_branch "demo"
     fi
 
@@ -469,9 +489,11 @@ function migrate() {
     # Grab AWS credentials
     set_s3_credentials $dedicated_bucket_service
 
-    if [[ ! -z $site_url ]]; then
+    if [[ $site_url != "nill" ]]; then
         # CF sign in sites user
-        echo "Updating site url CDN"
+        echo ""
+        echo "Updating site url CDN from url $site_url"
+        echo ""
         site_cdn_start=$(date +%s)
         sign_in_sites_user
 
@@ -489,9 +511,11 @@ function migrate() {
     # Grab AWS credentials
     set_s3_credentials $dedicated_bucket_service
 
-    if [[ ! -z $demo_url ]]; then
+    if [[ $demo_url != "nill" ]]; then
         # CF sign in sites user
-        echo "Updating demo url CDN"
+        echo ""
+        echo "Updating demo url CDN from url $demo_url"
+        echo ""
         demo_cdn_start=$(date +%s)
         sign_in_sites_user
 

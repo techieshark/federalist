@@ -37,7 +37,7 @@ $ /app/migrate-site-bucket.sh getsites
 # Running the tasks in staging example
 ## NOTE - Make sure to remove "https://" when adding the <[site | demo] domain> arguments
 $ cf run-task federalist-bucket-migrator-worker-staging "/app/migrate-site-bucket.sh migrate \
-    <owner> <repo> <site domain< <demo domain> \
+    <owner> <repo> <site domain> <demo domain> \
     <site id> <site branch> <demo branch>"
 ```
 
