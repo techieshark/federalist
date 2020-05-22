@@ -94,7 +94,7 @@ const buildContainerEnvironment = (build) => {
 };
 
 const setupBucket = async (build, buildCount) => {
-  if (buildCount > 1) return true;
+  if (buildCount > 0) return true;
 
   const credentials = await apiClient.fetchServiceInstanceCredentials(build.Site.s3ServiceName);
   const {
