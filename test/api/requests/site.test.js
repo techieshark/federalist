@@ -1589,7 +1589,7 @@ describe('Site API', () => {
             .type('json')
             .expect(200);
 
-          site = await site.findByPk(site.id);
+          site = await Site.findByPk(site.id);
           expect(site.config).to.deep.equal({ blah: 'blahblah' });
         });
       });
@@ -1708,7 +1708,7 @@ describe('Site API', () => {
 
 
           validateAgainstJSONSchema('POST', '/site/{site_id}/basic-auth', 200, body);
-          site = await site.findByPk(site.id);
+          site = await Site.findByPk(site.id);
           expect(site.config).to.deep.equal({
             basicAuth: credentials,
             blah: 'blahblahblah',
