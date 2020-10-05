@@ -55,6 +55,10 @@ function get(path, query) {
   return _fetch(path + qs);
 }
 
+function post(path, body) {
+  return _fetch(path, { method: 'POST', body: JSON.stringify(body) });
+}
+
 function put(path, body) {
   return _fetch(path, { method: 'PUT', body: JSON.stringify(body) });
 }
@@ -87,7 +91,19 @@ async function logout() {
   return get('/logout').catch(() => null);
 }
 
+async function createDomain(siteId, { domain, branch, serviceName }) {
+  return post('/domains', {
+    site: siteId, domain, branch, serviceName,
+  });
+}
+
+async function destroyDomain(domainId) {
+  return destroy(`/domains/${domainId}`);
+}
+
 export {
+  createDomain,
+  destroyDomain,
   destroySite,
   fetchMe,
   fetchBuilds,

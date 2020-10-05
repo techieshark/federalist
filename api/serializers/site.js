@@ -59,6 +59,19 @@ function serializeNew(site, isSystemAdmin = false) {
 
   if (isSystemAdmin) {
     filtered.containerConfig = site.containerConfig;
+    filtered.domains = [];
+    if (filtered.domain) {
+      filtered.domains.push({
+        name: filtered.domain,
+        branch: filtered.defaultBranch,
+      });
+    }
+    if (filtered.demoDomain) {
+      filtered.domains.push({
+        name: filtered.demoDomain,
+        branch: filtered.demoBranch,
+      });
+    }
   }
 
   return omitBy((v => v === null), filtered);

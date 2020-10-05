@@ -14,6 +14,7 @@ export { default as PageTitle } from './PageTitle.svelte';
 export { default as SectionHeader } from './SectionHeader.svelte';
 export { default as SiteCard } from './SiteCard.svelte';
 export { default as SiteDeleteForm } from './SiteDeleteForm.svelte';
+export { default as SiteDomains } from './SiteDomains.svelte';
 export { default as SiteForm } from './SiteForm.svelte';
 export { default as SiteMetadata } from './SiteMetadata.svelte';
 export { default as UserList } from './UserList.svelte';

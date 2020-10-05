@@ -14,6 +14,7 @@
     SiteDeleteForm,
     GridContainer,
     PageTitle,
+    SiteDomains,
     SiteForm,
     SiteMetadata,
   } from '../components';
@@ -34,6 +35,7 @@
   {#if site}
     <PageTitle>{site.owner}/{site.repository}</PageTitle>
     <SiteMetadata {site} />
+    <SiteDomains siteId={site.id} domains={site.domains}/>
     <SiteForm {site} on:submit={handleSubmit} />
     <SiteDeleteForm {site} on:submit={destroySite(id)} />
   {:else}
